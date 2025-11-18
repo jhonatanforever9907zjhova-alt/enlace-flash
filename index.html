@@ -1,10 +1,356 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Enlace Flash</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Enlace-Flash • Obten tu enlace</title>
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/545/545682.png">
+<style>
+  :root{
+    --bg:#071428; --card:#0f1720; --accent:#06b6d4; --muted:#9ca3af;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg,#071428 0%,#00111a 100%); color:#e6eef8; font-family:Inter,Arial,Helvetica,sans-serif;
+    padding:20px;
+  }
+  .wrap{width:100%;max-width:980px;}
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:20px; box-shadow:0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);}
+  .cols{display:flex;gap:18px;align-items:stretch;flex-wrap:wrap}
+  .left{flex:1;min-width:300px}
+  .right{width:360px;min-width:260px}
+  h1{margin:0 0 8px;font-size:20px}
+  p.small{margin:0;color:var(--muted)}
+  .adbox{margin:14px 0;border-radius:10px;padding:8px;min-height:110px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center}
+  .step{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-bottom:10px}
+  .timer{font-size:48px;font-weight:700;color:var(--accent);margin:6px 0}
+  .btn{display:inline-block;padding:12px 18px;border-radius:10px;border:none;background:linear-gradient(90deg,#06b6d4,#0ea5ff);color:#02121a;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e6eef8}
+  .fake-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .fake{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.03);cursor:pointer}
+  .small-muted{color:var(--muted);font-size:14px;margin-top:8px}
+  .adblock{background:#2b0b0b;padding:10px;border-radius:8px;color:#ffdada;margin-bottom:8px;display:none}
+  .badge{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-size:13px}
+  footer{margin-top:14px;color:var(--muted);font-size:13px;text-align:center}
+  @media(max-width:880px){ .cols{flex-direction:column} .right{width:100%} }
+</style>
 </head>
 <body>
-    <h1>¡Página creada correctamente!</h1>
+<div class="wrap">
+  <div class="panel">
+    <div class="cols">
+      <div class="left">
+        <h1>🔗 Tu enlace está casi listo</h1>
+        <p class="small">Sigue los 3 pasos para revelar el enlace. Gracias por apoyar el proyecto (mira el anuncio).</p>
+
+        <!-- Step 1: anuncio -->
+        <div class="step" id="step1">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small-muted">Paso 1 — Mira el anuncio</div>
+              <div class="small-muted">Interactúa con evidencia de anuncio (no es obligatorio).</div>
+            </div>
+            <div class="badge" id="status">Cargando anuncio...</div>
+          </div>
+
+          <div class="adbox" id="adbox" aria-live="polite">
+            <!-- Aquí va script de AdSterra (insertado por ti o ya incluido) -->
+            <!-- Ejemplo (popunder script en placeholder): -->
+            <!-- <script type="text/javascript" src="//pl28077552.effectivegatecpm.com/ff/e4/b3/ffe4b342f316ce3a55e944c51c4a9465.js"></script> -->
+            AD PLACEHOLDER
+          </div>
+
+          <div class="fake-row" id="fakeButtons">
+            <div class="fake" data-action="download">Descargar</div>
+            <div class="fake" data-action="ver">Ver ahora</div>
+            <div class="fake" data-action="siguiente">Siguiente</div>
+          </div>
+        </div>
+
+        <!-- Step 2: contador -->
+        <div class="step" id="step2" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small-muted">Paso 2 — Espera</div>
+              <div class="small-muted">El temporizador desbloquea el siguiente paso.</div>
+            </div>
+            <div class="badge">Tiempo</div>
+          </div>
+
+          <div class="timer" id="timer">10</div>
+          <div class="small-muted">El botón aparecerá cuando termine el contador.</div>
+        </div>
+
+        <!-- Step 3: captcha + enlace -->
+        <div class="step" id="step3" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small-muted">Paso 3 — Verificación</div>
+              <div class="small-muted">Completa la verificación y obtén el enlace.</div>
+            </div>
+            <div class="badge">Listo</div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <input id="captchaInput" placeholder="Escribe: ABCD" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);flex:1;background:transparent;color:inherit" />
+            <button class="btn" id="verifyBtn">Verificar</button>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+            <button class="btn" id="getBtn" style="display:none">🔓 Obtener enlace</button>
+            <button class="btn ghost" id="copyBtn">📋 Copiar enlace</button>
+          </div>
+
+          <div class="small-muted" style="margin-top:8px">Enlace final: <span id="finalPreview" style="font-weight:600"></span></div>
+        </div>
+
+        <div id="adblockWarn" class="adblock" role="alert">Parece que estás usando un bloqueador de anuncios. Desactívalo para apoyar este sitio.</div>
+      </div>
+
+      <div class="right">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div><strong>Detalles</strong></div>
+          <div class="small-muted">Enlace protegido</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-bottom:8px">
+          <div class="small-muted">Destino</div>
+          <div id="destShort" style="word-break:break-all;font-weight:700;margin-top:6px">—</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;">
+          <div class="small-muted">Stats (local)</div>
+          <div style="margin-top:8px">
+            <div class="small-muted">Impresiones: <span id="statImpr">0</span></div>
+            <div class="small-muted">Clicks: <span id="statClick">0</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer>© Enlace-Flash • Protegido por dominio</footer>
+  </div>
+</div>
+
+<script>
+/* ======================= CONFIGURACION ======================= */
+/* Host permitido (sin https:// ni ruta) */
+const ALLOWED_HOST = "jhonatanforever9907jhov-alt.github.io";
+
+/* Popunder script (tu AdSterra popunder) - se inyecta solo al click final */
+const POPUNDER_SRC = "//pl28077552.effectivegatecpm.com/ff/e4/b3/ffe4b342f316ce3a55e944c51c4a9465.js";
+
+/* Temporizador (segundos) */
+const TIMER_SECONDS = 10;
+
+/* Activar captcha falso */
+const USE_FAKE_CAPTCHA = true;
+
+/* ===================== LECTURA URL DESTINO ===================== */
+const params = new URLSearchParams(window.location.search);
+const finalRaw = params.get("r") || params.get("url") || params.get("dest");
+const destPreview = document.getElementById("destShort");
+const finalPreview = document.getElementById("finalPreview");
+const destShort = finalRaw ? decodeURIComponent(finalRaw) : null;
+destPreview.textContent = destShort ? (destShort.length>80? destShort.slice(0,80)+"…":destShort) : "(no provisto)";
+finalPreview.textContent = destShort ? destShort : "(no provisto)";
+
+/* ===================== CHEQUEO DE HOST ===================== */
+(function checkHost(){
+  if(!window.location.host.includes(ALLOWED_HOST)){
+    document.getElementById("adbox").innerHTML = "<div class='small-muted'>Host no autorizado.</div>";
+    document.getElementById("status").textContent = "Host no autorizado";
+    throw new Error("Host no autorizado");
+  }
+})();
+
+/* ===================== DETECTAR ADBLOCK ===================== */
+function detectAdblock(){
+  const bait = document.createElement('div');
+  bait.className = 'adsbox bait';
+  bait.style.width='1px'; bait.style.height='1px'; bait.style.position='absolute'; bait.style.left='-9999px';
+  document.body.appendChild(bait);
+  const blocked = (getComputedStyle(bait).display === 'none') || bait.offsetParent === null;
+  document.body.removeChild(bait);
+  return blocked;
+}
+
+/* ===================== INICIALIZACION UI ===================== */
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+const status = document.getElementById("status");
+const adblockWarn = document.getElementById("adblockWarn");
+const fakeButtons = document.getElementById("fakeButtons");
+const timerEl = document.getElementById("timer");
+const verifyBtn = document.getElementById("verifyBtn");
+const captchaInput = document.getElementById("captchaInput");
+const getBtn = document.getElementById("getBtn");
+const copyBtn = document.getElementById("copyBtn");
+const statImpr = document.getElementById("statImpr");
+const statClick = document.getElementById("statClick");
+
+/* Local stats (very small, stored locally) */
+const STATS_KEY = "enlaceflash_stats_" + (location.hostname || "local");
+let stats = JSON.parse(localStorage.getItem(STATS_KEY) || '{"impr":0,"clk":0}');
+statImpr.textContent = stats.impr;
+statClick.textContent = stats.clk;
+
+/* aumenta impresiones cuando se carga la página */
+function incImpr(){
+  stats.impr++; localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  statImpr.textContent = stats.impr;
+}
+
+/* ===================== AD / ADPLACEHOLDER ===================== */
+/* Si quieres que el ad se muestre (iframe/banner), pega tu script en HTML manualmente.
+   El popunder (POPUNDER_SRC) se inyecta únicamente al click final. */
+(function loadAdPlaceholder(){
+  // Si quieres usar otro ad inline, aquí lo insertas (ej. Adsterra iframe unit).
+  // Mantendremos placeholder y aumentamos impresiones.
+  document.getElementById("adbox").innerHTML = "<div style='opacity:0.9;color:var(--muted)'>Anuncio cargando…</div>";
+  setTimeout(()=> {
+    // si no hay ad bloqueado, mostramos que cargó
+    if(detectAdblock()){
+      adblockWarn.style.display = "block";
+      status.textContent = "Adblock detectado";
+    } else {
+      document.getElementById("adbox").innerHTML = "<div style='color:var(--muted)'>Anuncio (placeholder). Si tienes el código, pégalo aquí.</div>";
+      status.textContent = "Anuncio listo";
+    }
+    incImpr();
+  },700);
+})();
+
+/* Si ya tienes un script banner (ej. atOptions + invoke.js), pégalo manualmente en el DIV adbox en tu archivo index.html
+   Example:
+   <script> atOptions = { 'key': 'xxx', 'format':'iframe' } </script>
+   <script src='//www.highperformanceformat.com/xxx/invoke.js'></script>
+*/
+
+/* ===================== FAKE BUTTONS (mejora CTR) ===================== */
+fakeButtons.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.fake');
+  if(!btn) return;
+  // al pulsar un boton falso, damos feedback y (opcional) reducir el tiempo 1s
+  btn.style.transform = "translateY(2px)";
+  setTimeout(()=> btn.style.transform="",160);
+  // ligera reducción de tiempo por interacción para mejor UX
+  if(currentT > 2){ currentT -= 1; timerEl.textContent = currentT; }
+});
+
+/* ===================== SECUENCIA DE 3 PASOS ===================== */
+let currentT = TIMER_SECONDS;
+let countdownInterval = null;
+
+/* start step sequence */
+function startSequence(){
+  // si no hay destino, mostramos error
+  if(!destShort){
+    status.textContent = "Falta parámetro ?r= o ?url=";
+    document.getElementById("adbox").innerHTML = "<div class='small-muted'>No se proporcionó enlace final.</div>";
+    return;
+  }
+
+  // step1 visible (ya por defecto)
+  step1.style.display = "block";
+  step2.style.display = "none";
+  step3.style.display = "none";
+
+  // cuando usuario interactúa con any fake button o adbox, iniciamos paso2
+  function toStep2(){
+    if(step2.style.display !== "none") return;
+    step1.style.display = "none";
+    step2.style.display = "block";
+    status.textContent = "Tiempo en curso";
+    currentT = TIMER_SECONDS;
+    timerEl.textContent = currentT;
+    countdownInterval = setInterval(()=>{
+      currentT--; timerEl.textContent = currentT;
+      if(currentT <= 0){
+        clearInterval(countdownInterval);
+        // pasar a paso 3
+        step2.style.display = "none";
+        step3.style.display = "block";
+        status.textContent = "Verifica para obtener el enlace";
+      }
+    }, 1000);
+  }
+
+  // iniciar si hacen click en adbox o en botones falsos - esto simula interacción
+  document.getElementById("adbox").addEventListener('click', toStep2, {once:true});
+  fakeButtons.addEventListener('click', toStep2, {once:true});
+
+  // también si el usuario no interactúa en 5s, iniciamos el contador automáticamente
+  setTimeout(()=> { if(step2.style.display === "none") toStep2(); }, 5000);
+}
+
+/* ===================== CAPTCHA (client-side UX only) ===================== */
+let captchaCode = "";
+function genCaptcha(){
+  const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let code = '';
+  for(let i=0;i<4;i++) code += letters.charAt(Math.floor(Math.random()*letters.length));
+  captchaCode = code;
+  captchaInput.placeholder = "Escribe: " + code;
+}
+genCaptcha();
+
+verifyBtn.addEventListener('click', ()=>{
+  if(captchaInput.value.trim().toUpperCase() === captchaCode){
+    // verificado
+    getBtn.style.display = "inline-block";
+    verifyBtn.textContent = "OK";
+    status.textContent = "Verificado";
+  } else {
+    status.textContent = "Código incorrecto";
+    genCaptcha();
+    captchaInput.value = "";
+  }
+});
+
+/* ===================== COPIAR (boton) ===================== */
+copyBtn.addEventListener('click', ()=>{
+  const shortUrl = location.href;
+  navigator.clipboard && navigator.clipboard.writeText(shortUrl).then(()=>{
+    copyBtn.textContent = "Copiado";
+    setTimeout(()=> copyBtn.textContent = "📋 Copiar enlace",1200);
+  }).catch(()=> { copyBtn.textContent = "Error"; });
+});
+
+/* ===================== POPUNDER + REDIRECCION FINAL ===================== */
+getBtn.addEventListener('click', ()=>{
+  // incrementar clicks local
+  stats.clk++; localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  statClick.textContent = stats.clk;
+
+  // inyectar popunder script (POPUNDER_SRC)
+  (function(){
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = POPUNDER_SRC;
+    document.body.appendChild(s);
+  })();
+
+  // redirigir con pequeño delay para que popunder ejecute
+  setTimeout(()=> {
+    location.href = destShort;
+  }, 300);
+});
+
+/* ===================== INICIALIZAR ===================== */
+window.addEventListener('load', ()=>{
+  // Si hay adblock, avisar
+  if(detectAdblock()){
+    adblockWarn.style.display = "block";
+    status.textContent = "Adblock detectado";
+  } else { status.textContent = "Anuncio listo"; }
+
+  // iniciar secuencia
+  startSequence();
+});
+</script>
 </body>
 </html>
