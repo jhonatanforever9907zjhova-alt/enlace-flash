@@ -3,40 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Espera un momento...</title>
+<title>Publicidad - FlashLink</title>
 <link rel="stylesheet" href="style.css">
-<script src="timer.js" defer></script>
+<script src="timer.js"></script>
 </head>
-
 <body>
 
-<div class="bg"></div>
-
-<!-- POPUNDER -->
+<!-- POPUNDER PUBLICITARIO -->
 <script type='text/javascript' src='//pl28077552.effectivegatecpm.com/ff/e4/b3/ffe4b342f316ce3a55e944c51c4a9465.js'></script>
 
-<div class="container">
+<div class="container advert-box">
+    <h2>Espera <span id="time">30</span> segundos…</h2>
+    <p>Tu enlace estará listo pronto</p>
 
-    <h1>Tu enlace está casi listo</h1>
-    <p class="subtitle">Espera <span id="seconds">30</span> segundos...</p>
-
-    <div class="card">
-
-        <!-- Anuncio 1 -->
-        <div class="ad-box">Publicidad</div>
-
-        <!-- Botón deshabilitado -->
-        <a id="continueBtn" class="btn disabled pulse" href="#">Esperando...</a>
-
-        <!-- Anuncio 2 -->
-        <div class="ad-box">Publicidad</div>
-
-    </div>
+    <button id="continueBtn" disabled>Continuar</button>
 </div>
 
-<audio id="finishSound">
-    <source src="https://www.myinstants.com/media/sounds/smw_coin.wav">
-</audio>
+<script>
+let finalURL = new URLSearchParams(window.location.search).get("u");
+if (!finalURL) {
+    document.body.innerHTML = "<h2>Error: enlace inválido</h2>";
+}
+
+document.getElementById("continueBtn").addEventListener("click", function() {
+    window.location.href = finalURL;
+});
+</script>
 
 </body>
 </html>
+
