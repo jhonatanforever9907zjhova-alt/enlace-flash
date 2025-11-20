@@ -9,17 +9,17 @@
 
 <body>
 
+<div class="bg"></div>
+
 <div class="container">
     <h1>FlashLink</h1>
-    <p class="subtitle">Tu acortador rápido con publicidad integrada</p>
+    <p class="subtitle">Acorta enlaces con publicidad integrada</p>
 
     <div class="card">
-
         <input type="text" id="longurl" placeholder="Pega tu enlace aquí..." />
-        <button onclick="generateLink()" class="btn">Acortar</button>
+        <button onclick="generateLink()" class="btn pulse">Acortar</button>
 
-        <p id="result" style="margin-top:20px;"></p>
-
+        <p id="result" class="result"></p>
     </div>
 </div>
 
@@ -34,11 +34,8 @@ function generateLink() {
 
     const encoded = encodeURIComponent(long);
 
-    // Genera el link tipo:
-    // https://TU-DOMINIO/advert.html?url=DESTINO
-
-    const shortLink = 
-      `https://jhonatanforever9907zjhova-alt.github.io/enlace-flash/advert.html?url=${encoded}`;
+    const shortLink =
+        `https://jhonatanforever9907zjhova-alt.github.io/enlace-flash/advert.html?url=${encoded}`;
 
     document.getElementById("result").innerHTML =
         `<strong>Tu enlace:</strong><br><a href="${shortLink}" target="_blank">${shortLink}</a>`;
