@@ -1,330 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tu enlace está casi listo</title>
-
-<style>
-:root{
-  --bg:#0f1720;
-  --card:#111827;
-  --accent:#0ea5ff;
-  --muted:#9ca3af;
-  --glass: rgba(255,255,255,0.03);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg,#071428 0%, #0b1220 100%);
-  color:#e6eef8;
-  font-family:Inter,Arial,Helvetica,sans-serif;
-  padding:24px;
-}
-.card{
-  width:100%;
-  max-width:760px;
-  background:var(--card);
-  border-radius:12px;
-  padding:18px;
-  box-shadow:0 6px 30px rgba(2,6,23,0.6);
-  border: 1px solid rgba(255,255,255,0.02);
-}
-.center{text-align:center}
-h1{margin-bottom:6px;font-size:22px}
-.small{color:var(--muted);font-size:14px}
-.adbox{
-  background:var(--glass);
-  border-radius:10px;
-  padding:14px;
-  margin:15px 0;
-  min-height:100px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.btn{
-  background:linear-gradient(90deg,#06b6d4,#0ea5ff);
-  border:none;
-  padding:12px 18px;
-  color:#02121a;
-  border-radius:10px;
-  font-weight:700;
-  cursor:pointer;
-  display:none;
-}
-.fake-buttons{
-  display:flex;
-  gap:12px;
-  margin-top:10px;
-}
-.fake{
-  background:rgba(255,255,255,0.05);
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:14px;
-}
-.step{
-  display:none;
-}
-.step.active{
-  display:block;
-}
-.captcha-box{
-  display:none;
-  margin-top:14px;
-}
-.captcha-box input{
-  padding:8px;
-  border-radius:6px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.04);
-  color:#fff;
-}
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlashLink - Acortador</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="card">
 
-  <div class="center">
-    <h1>Tu enlace está casi listo</h1>
-    <p class="small">Sigue los 3 pasos para revelar el enlace. Gracias por apoyar el proyecto (mira el anuncio).</p>
-  </div>
+<div class="container">
+    <h1>FlashLink</h1>
+    <p class="subtitle">Tu acortador rápido con publicidad integrada</p>
 
-  <!-- ESTADO + TIMER -->
-  <div style="margin-top:12px;margin-bottom:18px">
-    <p class="small">Estado: <span id="status">Cargando anuncio...</span></p>
-    <p class="small">Tiempo restante: <span id="timer">8</span>s</p>
-  </div>
+    <div class="card">
 
-  <!-- PASO 1 -->
-  <div id="step1" class="step active">
-    <h3>Paso 1 — Mira el anuncio</h3>
-    <p class="small">Interactúa con el anuncio o con los botones falsos.</p>
+        <input type="text" id="longurl" placeholder="Pega tu enlace aquí..." />
+        <button onclick="generateLink()" class="btn">Acortar</button>
 
-    <div id="adbox" class="adbox">
-      <!-- AQUÍ SE INYECTA TU POPUNDER -->
-      <script async type='text/javascript' src='//pl28077552.effectivegatecpm.com/ff/e4/b3/ffe4b342f316ce3a55e944c51c4a9465.js'></script>
+        <p id="result" style="margin-top:20px;"></p>
+
     </div>
-
-    <div class="fake-buttons" id="fakeButtons">
-      <div class="fake">Descargar</div>
-      <div class="fake">Ver ahora</div>
-      <div class="fake">Siguiente</div>
-    </div>
-  </div>
-
-  <!-- PASO 2 -->
-  <div id="step2" class="step">
-    <h3>Paso 2 — Espera el contador</h3>
-    <p class="small">El botón aparecerá cuando el tiempo llegue a 0.</p>
-  </div>
-
-  <!-- PASO 3 -->
-  <div id="step3" class="step">
-    <h3>Paso 3 — Verificación</h3>
-    <p class="small">Escribe el captcha para continuar.</p>
-    <div class="captcha-box" id="captchaBox">
-      <input type="text" id="captchaInput" placeholder="">
-      <button class="fake" id="verifyBtn">Verificar</button>
-    </div>
-
-    <button id="getBtn" class="btn">🎉 Obtener enlace</button>
-  </div>
-
-  <br>
-
-  <!-- COPIAR ENLACE -->
-  <button id="copyBtn" class="fake">📋 Copiar enlace</button>
-
-  <br><br>
-
-  <!-- STATS LOCALES -->
-  <div class="small">
-    <b>Impresiones:</b> <span id="statImp">0</span><br>
-    <b>Clicks:</b> <span id="statClick">0</span>
-  </div>
-
-  <p class="small" style="margin-top:18px;text-align:center">
-    © Enlace-Flash • Protegido por dominio
-  </p>
-
 </div>
+
 <script>
-/* ===================== CONFIG ===================== */
-const TIMER_SECONDS = 8;
-const POPUNDER_SRC = "//pl28077552.effectivegatecpm.com/ff/e4/b3/ffe4b342f316ce3a55e944c51c4a9465.js";
+function generateLink() {
+    const long = document.getElementById("longurl").value.trim();
 
-/* ===================== OBTENER DESTINO ===================== */
-const params = new URLSearchParams(location.search);
-const destShort = params.get("r") || params.get("url") || params.get("dest");
+    if (!long) {
+        alert("Ingresa un enlace válido");
+        return;
+    }
 
-/* elementos */
-const step1 = document.getElementById("step1");
-const step2 = document.getElementById("step2");
-const step3 = document.getElementById("step3");
-const status = document.getElementById("status");
-const timerEl = document.getElementById("timer");
-const adbox = document.getElementById("adbox");
-const fakeButtons = document.getElementById("fakeButtons");
-const captchaBox = document.getElementById("captchaBox");
-const captchaInput = document.getElementById("captchaInput");
-const verifyBtn = document.getElementById("verifyBtn");
-const getBtn = document.getElementById("getBtn");
-const copyBtn = document.getElementById("copyBtn");
+    const encoded = encodeURIComponent(long);
 
-const statImp = document.getElementById("statImp");
-const statClick = document.getElementById("statClick");
+    // Genera el link tipo:
+    // https://TU-DOMINIO/advert.html?url=DESTINO
 
-/* ===================== STATS LOCALES ===================== */
-const STATS_KEY = "stats_enlace_flash";
-let stats = JSON.parse(localStorage.getItem(STATS_KEY) || "{}");
-stats.imp = stats.imp ?? 0;
-stats.clk = stats.clk ?? 0;
+    const shortLink = 
+      `https://jhonatanforever9907zjhova-alt.github.io/enlace-flash/advert.html?url=${encoded}`;
 
-stats.imp++;
-localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-
-statImp.textContent = stats.imp;
-statClick.textContent = stats.clk;
-
-/* ===================== DETECCIÓN ADBLOCK ===================== */
-function detectAdblock(){
-  const bait = document.createElement("div");
-  bait.className = "ad-banner ad adsbox";
-  bait.style.height = "1px";
-  bait.style.position = "absolute";
-  bait.style.left = "-9999px";
-  document.body.appendChild(bait);
-
-  const blocked =
-    getComputedStyle(bait).display === "none" ||
-    bait.offsetParent === null;
-
-  bait.remove();
-  return blocked;
+    document.getElementById("result").innerHTML =
+        `<strong>Tu enlace:</strong><br><a href="${shortLink}" target="_blank">${shortLink}</a>`;
 }
-
-/* ===================== BOTONES FALSOS (mejoran CTR) ===================== */
-fakeButtons.addEventListener("click", (e)=>{
-  const btn = e.target.closest(".fake");
-  if(!btn) return;
-
-  btn.style.transform = "scale(0.95)";
-  setTimeout(()=> btn.style.transform = "", 150);
-
-  if(currentT > 2){
-    currentT -= 1;
-    timerEl.textContent = currentT;
-  }
-});
-
-/* ===================== SECUENCIA DE 3 PASOS ===================== */
-let currentT = TIMER_SECONDS;
-let countdownInterval = null;
-
-function startSequence(){
-  if(!destShort){
-    status.textContent = "Error: falta parámetro ?r= o ?url=";
-    adbox.innerHTML = "<p style='color:#ffcccc'>No se proporcionó enlace final.</p>";
-    return;
-  }
-
-  function toStep2(){
-    if(step2.classList.contains("active")) return;
-
-    step1.classList.remove("active");
-    step2.classList.add("active");
-    status.textContent = "Tiempo en curso";
-
-    currentT = TIMER_SECONDS;
-    timerEl.textContent = currentT;
-
-    countdownInterval = setInterval(()=>{
-      currentT--;
-      timerEl.textContent = currentT;
-
-      if(currentT <= 0){
-        clearInterval(countdownInterval);
-
-        step2.classList.remove("active");
-        step3.classList.add("active");
-        captchaBox.style.display = "block";
-        status.textContent = "Verifica para obtener el enlace";
-      }
-    }, 1000);
-  }
-
-  adbox.addEventListener("click", toStep2, {once:true});
-  fakeButtons.addEventListener("click", toStep2, {once:true});
-
-  setTimeout(()=>{
-    if(!step2.classList.contains("active")) toStep2();
-  }, 5000);
-}
-
-/* ===================== CAPTCHA ===================== */
-let captchaCode = "";
-function genCaptcha(){
-  const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-  captchaCode = "";
-  for(let i=0;i<4;i++){
-    captchaCode += letters[Math.floor(Math.random()*letters.length)];
-  }
-  captchaInput.placeholder = "Escribe: " + captchaCode;
-}
-genCaptcha();
-
-verifyBtn.addEventListener("click", ()=>{
-  if(captchaInput.value.trim().toUpperCase() === captchaCode){
-    getBtn.style.display = "inline-block";
-    verifyBtn.textContent = "OK";
-    status.textContent = "Verificado";
-  } else {
-    status.textContent = "Código incorrecto";
-    captchaInput.value = "";
-    genCaptcha();
-  }
-});
-
-/* ===================== COPIAR ENLACE CORTO ===================== */
-copyBtn.addEventListener("click", ()=>{
-  navigator.clipboard.writeText(location.href)
-    .then(()=>{
-      copyBtn.textContent = "Copiado";
-      setTimeout(()=> copyBtn.textContent = "📋 Copiar enlace",1200);
-    })
-    .catch(()=> copyBtn.textContent = "Error");
-});
-
-/* ===================== POPUNDER + REDIRECCIÓN ===================== */
-getBtn.addEventListener("click", ()=>{
-  stats.clk++;
-  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  statClick.textContent = stats.clk;
-
-  const s = document.createElement("script");
-  s.src = POPUNDER_SRC;
-  s.async = true;
-  document.body.appendChild(s);
-
-  setTimeout(()=> location.href = destShort, 350);
-});
-
-/* ===================== INICIAR ===================== */
-window.addEventListener("load", ()=>{
-  if(detectAdblock()){
-    status.textContent = "Adblock detectado (puede afectar el anuncio)";
-  } else {
-    status.textContent = "Anuncio listo";
-  }
-
-  startSequence();
-});
 </script>
+
 </body>
 </html>
+
