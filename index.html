@@ -1,47 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlashLink - Acortador</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlashLink</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-
-<div class="bg"></div>
 
 <div class="container">
     <h1>FlashLink</h1>
-    <p class="subtitle">Acorta enlaces con publicidad integrada</p>
+    <p>Acorta enlaces con publicidad integrada</p>
 
-    <div class="card">
-        <input type="text" id="longurl" placeholder="Pega tu enlace aquí..." />
-        <button onclick="generateLink()" class="btn pulse">Acortar</button>
-
-        <p id="result" class="result"></p>
+    <div class="box">
+        <input type="text" id="linkInput" placeholder="Pega tu enlace aquí...">
+        <button onclick="shorten()">Acortar</button>
     </div>
+
+    <p id="result"></p>
 </div>
 
 <script>
-function generateLink() {
-    const long = document.getElementById("longurl").value.trim();
-
-    if (!long) {
-        alert("Ingresa un enlace válido");
+function shorten() {
+    let url = document.getElementById('linkInput').value.trim();
+    if (!url) {
+        alert("Por favor ingresa un enlace");
         return;
     }
 
-    const encoded = encodeURIComponent(long);
-
-    const shortLink =
-        `https://jhonatanforever9907zjhova-alt.github.io/enlace-flash/advert.html?url=${encoded}`;
+    let encoded = encodeURIComponent(url);
+    let shortURL = "https://jhonatanforever9907zjhova-alt.github.io/enlace-flash/advert.html?u=" + encoded;
 
     document.getElementById("result").innerHTML =
-        `<strong>Tu enlace:</strong><br><a href="${shortLink}" target="_blank">${shortLink}</a>`;
+        `Tu enlace acortado:<br><a href="${shortURL}" target="_blank">${shortURL}</a>`;
 }
 </script>
 
 </body>
 </html>
-
